@@ -1,6 +1,7 @@
 # Kaleidoscope Generator
 
 This repository contains a deterministic and unique kaleidoscope generator that creates intricate visual patterns based on any input string of characters, making each pattern truly one-of-a-kind. It outputs both an image and a GIF.
+The kaleidoscope below was created using the brutalist style, and the keyword: Optimal
 
 ![Brutalist: Optimal](Examples/brutalist_Optimal.gif)
 
@@ -60,6 +61,7 @@ pip install pillow moviepy opencv-python numpy noise
 
 - Feel free to customize parameters within `kaleidoscope_gui.py` to explore different visual styles.
 - The generator's deterministic nature ensures that the same input string will always produce the same pattern.
+- Feel free to dive into the code (specifically the generate_intricate_texture method) and edit it to customize the output patterns to your liking.
 - The output GIFs will be more visually pleasing if they are slowed down. The output as GIF is to preserve the color vibrance as this is lost in MP4 compression.
 
 Enjoy creating mesmerizing kaleidoscopic art with your own personalized inputs!
