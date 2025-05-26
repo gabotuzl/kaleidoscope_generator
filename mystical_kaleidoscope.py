@@ -27,12 +27,12 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
 
 
     def hash_to_params(hash_str):
-        """Extract numerical values from the hash to control the pattern."""
+        # Extracts numerical values from the hash to control the pattern
         params = [int(hash_str[i:i+2], 16) / 255.0 for i in range(0, len(hash_str) - 1, 2)]
         return params
 
     def generate_perlin_texture(size, hash_str):
-        """Generate a Perlin noise texture influenced by the hash."""
+        # Generates a Perlin noise texture influenced by the hash
         scale = int(hash_str[:2], 16) / 5 + 5  # Control scale based on hash
         octaves = int(hash_str[2:4], 16) % 5 + 1
         persistence = (int(hash_str[4:6], 16) % 40 + 60) / 100
@@ -47,10 +47,10 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
         return texture
 
     def generate_intricate_texture_with_perlin(size, hash_str, i):
-        """Combine Perlin noise with wave interference for a complex texture."""
+        # Combines Perlin noise with wave interference for a complex texture
         params = hash_to_params(hash_str)
         
-        # Create wave interference pattern
+        # Creates wave interference pattern
         animator =(params[8]+params[19])* np.sin((i) * np.pi/30)
         animator2 = (params[13]+params[2]) * np.cos((i) * np.pi/30)
 
@@ -58,19 +58,18 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
         y = np.linspace(-2, 2, size)
         X, Y = np.meshgrid(x, y)
 
-        wave1 = ((X + animator))**2 + (Y)**2  - animator2 - (params[0]+params[16]+3 * params[10]) # + (X-params[2])**2 + (Y-params[13])**2  +animator2
+        wave1 = ((X + animator))**2 + (Y)**2  - animator2 - (params[0]+params[16]+3 * params[10])
         wave2 = ((X))**2 + (Y - params[10]*animator2)**2 
-        #wave3 = np.cos(params[8] * (X**2 - Y**2) / (20 * X * params[9]) + params[23] * 3 + params[25] + params[2]) * 6 + animator
 
         combined_wave = np.sin(wave1 + wave2) * params[1] * params[3] * params[24] * np.cos(wave2) 
 
-        # Combine the waves 
+        # Combines the waves 
         texture = np.multiply(combined_wave, 1)
 
-        # Convert to grayscale intensity
+        # Converts to grayscale intensity
         img = np.uint8(255 * (texture - texture.min()) / (texture.max() - texture.min()))
 
-        # Create intricate color variations
+        # Creates intricate color variations
         r = ((img * (params[10]+params[26]) + animator2**3 * 1.5 + 50) % 255 ).clip(200, 255)
         g = ((img * (params[11]+params[30]) + animator + 3*animator**2 * 0.5 + 50) % 255).clip(200, 255)
         b = ((img * (params[12]+params[31]) + animator2 + animator * 0.9 + 50) % 255).clip(200, 255)
@@ -79,7 +78,7 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
         return color_img
 
     def apply_kaleidoscope_effect(image, hash_str):
-        """Create kaleidoscope effect."""
+        # Creates kaleidoscope effect
         size = image.shape[0]
         center = size // 2
         kaleidoscope = np.zeros_like(image)
@@ -87,7 +86,7 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
         params = hash_to_params(hash_str)
         mirrors = int(params[7]*10+2) if (params[7]*10 > 1) else int(params[7]*10+3)
 
-        # Apply 8 reflections (45-degree increments)
+        # Applies reflections
         for i in range(mirrors):
             angle = i * (360/mirrors)
             M = cv2.getRotationMatrix2D((center, center), angle, 1)
@@ -121,34 +120,34 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
         return vibrant_image
 
     def apply_circular_mask(image):
-        """Applies a circular mask to keep only the center of the image."""
+        # Applies a circular mask to keep only the center of the image
         height, width = image.shape[:2]
         mask = np.zeros((height, width), dtype=np.uint8)
 
-        # Create a white filled circle in the center
+        # Creates a white filled circle in the center
         center = (width // 2, height // 2)
         radius = min(width, height) // 2  # Use half of the smallest dimension
         cv2.circle(mask, center, radius, 255, -1)  # -1 fills the circle
 
-        # Apply the mask: keep only the circle
+        # Applies the mask: keep only the circle
         masked_image = cv2.bitwise_and(image, image, mask=mask)
 
         return masked_image
 
     def generate_kaleidoscope_image(text, i, generate_video, size=720):
-        """Generate the final kaleidoscope image based on text input."""
+        # Generates the final kaleidoscope image based on text input
         hash_str = hashlib.sha256(text.encode()).hexdigest()
         base_pattern = generate_intricate_texture_with_perlin(size, hash_str, i)
         kaleidoscope_image = apply_kaleidoscope_effect(base_pattern, hash_str)
 
-        # Sharpen the image and boost color saturation
+        # Sharpens the image and boost color saturation
         sharpened_image = apply_sharpening(kaleidoscope_image)
         vibrant_image = apply_saturation_boost(sharpened_image)
 
         # Circular cutout
         final_image = apply_circular_mask(vibrant_image)
 
-        # Convert to PIL Image and Save
+        # Converts to PIL Image and Save
         img = Image.fromarray(final_image)
         if generate_video is False:
             img.save(f'PNG/mystical_{text}.png')
