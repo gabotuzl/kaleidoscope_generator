@@ -2,8 +2,9 @@
 
 This repository contains a deterministic and unique kaleidoscope generator that creates intricate visual patterns based on any input string of characters, making each pattern truly one-of-a-kind. It outputs both an image and a GIF.
 
-
-![Brutalist: Optimal](Examples/brutalist_Optimal.gif) ![Perlin: Lyapunov](Examples/perlin_Lyapunov.gif) ![Mythical: Firestarter](Examples/mythical_Firestarter.gif)
+<div style="text-align: center;">
+  ![Brutalist: Optimal](Examples/brutalist_Optimal.gif)
+</div>
 
 
 ## How It Works
