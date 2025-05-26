@@ -26,12 +26,12 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
 
 
     def hash_to_params(hash_str):
-        """Extract numerical values from the hash to control the pattern."""
+        # Extracts numerical values from the hash to control the pattern
         params = [int(hash_str[i:i+2], 16) / 255.0 for i in range(0, len(hash_str) - 1, 2)]
         return params
 
     def generate_perlin_texture(size, hash_str):
-        """Generate a Perlin noise texture influenced by the hash."""
+        # Generates a Perlin noise texture influenced by the hash 
         scale = int(hash_str[:2], 16) / 5 + 5  # Control scale based on hash
         octaves = int(hash_str[2:4], 16) % 5 + 1
         persistence = (int(hash_str[4:6], 16) % 40 + 60) / 100
@@ -46,7 +46,7 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
         return texture
 
     def generate_intricate_texture_with_perlin(size, hash_str, i):
-        """Combine Perlin noise with wave interference for a complex texture."""
+        # Combines Perlin noise with wave interference for a complex texture 
         params = hash_to_params(hash_str)
         
         # Creates wave interference pattern
