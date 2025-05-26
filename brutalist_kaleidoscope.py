@@ -45,7 +45,7 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
         
         return texture
 
-    def generate_intricate_texture_with_perlin(size, hash_str, i):
+    def generate_intricate_texture(size, hash_str, i):
         # Combines Perlin noise with wave interference for a complex texture 
         params = hash_to_params(hash_str)
         
@@ -80,7 +80,7 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
         return color_img
 
     def apply_kaleidoscope_effect(image, hash_str):
-        """Create kaleidoscope effect."""
+        # Creates kaleidoscope effect
         size = image.shape[0]
         center = size // 2
         kaleidoscope = np.zeros_like(image)
@@ -107,7 +107,7 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
         return final_image
 
     def apply_circular_mask(image):
-        """Applies a circular mask to keep only the center of the image."""
+        # Applies a circular mask to keep only the center of the image
         height, width = image.shape[:2]
         mask = np.zeros((height, width), dtype=np.uint8)
 
@@ -124,7 +124,7 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
     def generate_kaleidoscope_image(text, i, generate_video, size=720):
         # Generates the final kaleidoscope image based on text input
         hash_str = hashlib.sha256(text.encode()).hexdigest()
-        base_pattern = generate_intricate_texture_with_perlin(size, hash_str, i)
+        base_pattern = generate_intricate_texture(size, hash_str, i)
         kaleidoscope_image = apply_kaleidoscope_effect(base_pattern, hash_str)
 
         # Sharpens the image and boost color saturation
