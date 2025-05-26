@@ -23,14 +23,14 @@ def generate_image():
         img = image_generator(user_input, generate_video)
         img_tk = ImageTk.PhotoImage(img)
         image_label.configure(image=img_tk, text='')
-        image_label.image = img_tk  # Ensure the reference is maintained
+        image_label.image = img_tk  # Ensures the reference is maintained
     elif generate_video is True:
         # Sets preview of kaleidoscope (first frame). For aesthetic and cache-cleaning purposes
         stop_gif()
         img = image_generator(user_input, False)
         img_tk = ImageTk.PhotoImage(img)
         image_label.configure(image=img_tk, text='')
-        image_label.image = img_tk  # Ensure the reference is maintained
+        image_label.image = img_tk  # Ensures the reference is maintained
 
         # Creates and displays gif on gui
         img = image_generator(user_input, generate_video)
@@ -64,7 +64,7 @@ def on_generate():
         update_status('Generating video... \nthis can take a while', 'red') 
         generate_video = True
 
-        # Run the long-running task in a separate thread to avoid blocking the main thread
+        # Runs the long-running task in a separate thread to avoid blocking the main thread
         threading.Thread(target=generate_image, daemon=True).start()
         
         
@@ -77,7 +77,7 @@ def on_generate():
 def cargarGIF(filename):
     global frames, frame_count
     gif = Image.open(filename)
-    #Extraer los frames en una lista
+    # Extracts frames into a list
     frames = []
     try:
         while True:
@@ -103,10 +103,10 @@ def stop_gif():
 
 def update_gif(ind=0):
     global frame, frame_count
-    if running:  # Check if animation should continue
+    if running:  # Checks if animation should continue
         frame = frames[ind % frame_count]
         image_label.configure(image=frame)    
-        #100 es el delay entre frames    
+        #100 is the delay between frames   
         app.after(75, update_gif, ind + 1)
 
 
@@ -122,47 +122,47 @@ def create_and_send_mail():
     receiver_email = email_box.get()
     body = 'You have sent yourself a Kaleidoscope after interacting with the Kaleidoscope Generator at ArtJam in MACROFEST 2025!\n\n Te has enviado un Caleidoscopio despues de interactuar con el Generador de Caleidoscopio en el ArtJam en MACROFEST 2025'
     try:
-        # Set up the server
+        # Sets up the server
         server = smtplib.SMTP('smtp.gmail.com', 587)  # Gmail SMTP server
         server.starttls()  # Secure connection
 
-        # Log in to the email account
+        # Logs in to the email account
         server.login(sender_email, sender_password)
 
-        # Create the email message
+        # Creates the email message
         msg = MIMEMultipart()
         msg['From'] = sender_email
         msg['To'] = receiver_email
         msg['Subject'] = subject
 
-        # Attach the email body
+        # Attaches the email body
         msg.attach(MIMEText(body, 'plain'))
 
         attachment_paths = [f'MP4/{style_chosen}_{user_input}.mp4', 
                             f'PNG/{style_chosen}_{user_input}.png']
 
-        # Loop through the attachment paths and attach them if they exist
+        # Loops through the attachment paths and attach them if they exist
         for attachment_path in attachment_paths:
-            if os.path.exists(attachment_path):  # Check if the file exists
-                # Open the file in binary mode
+            if os.path.exists(attachment_path):  # Checks if the file exists
+                # Opens the file in binary mode
                 with open(attachment_path, 'rb') as attachment:
                     part = MIMEBase('application', 'octet-stream')
                     part.set_payload(attachment.read())
                     encoders.encode_base64(part)
 
-                    # Add the header for the attachment
+                    # Adds the header for the attachment
                     part.add_header('Content-Disposition', f'attachment; filename={attachment_path.split("/")[-1]}')
 
-                    # Attach the file to the email
+                    # Attaches the file to the email
                     msg.attach(part)
             else:
                 pass
 
 
-        # Send the email
+        # Sends the email
         server.sendmail(sender_email, receiver_email, msg.as_string())
 
-        # Close the connection
+        # Closes the connection
         server.quit()
 
         message = "Email sent \nsuccessfully!"
@@ -175,7 +175,7 @@ def create_and_send_mail():
         print(f"Error: {e}")
 
 def on_send():
-    # Run the long-running task in a separate thread to avoid blocking the main thread
+    # Runs the long-running task in a separate thread to avoid blocking the main thread
     threading.Thread(target=create_and_send_mail, daemon=True).start()
     
 
@@ -183,7 +183,7 @@ def on_send():
 def update_status(message, color):
     status_label.configure(text=message, text_color=color)
 
-# Initialize the main window
+# Initializes the main window
 ctk.set_appearance_mode("dark")
 app = ctk.CTk()
 app.title("Kaleidoscope Generator")
@@ -193,7 +193,7 @@ app.geometry("1200x900")
 frame = ctk.CTkFrame(app)
 frame.grid(row=0, column=0, pady=20, padx=20, sticky="nsew")
 
-# Configure grid layout
+# Configures grid layout
 frame.grid_rowconfigure(0, weight=1)
 frame.grid_columnconfigure(0, weight=1, uniform="equal")
 frame.grid_columnconfigure(1, weight=3, uniform="equal")
@@ -258,13 +258,13 @@ email_box.grid(row=6, column=0, pady=10, padx=20, sticky="new")
 send_button = ctk.CTkButton(controls_frame, text="SEND", command=on_send)
 send_button.grid(row=6, column=1, padx=10, pady=10, sticky="new")
 
-# Add a logo at the bottom left, more flattering alignment
-image = Image.open("artjam_logo.PNG")  # Replace with your image path
-image = image.resize((300, 300))  # Resize the image to a more flattering size
+# Adds a logo at the bottom left, more flattering alignment
+image = Image.open("kaleidoscope_logo.PNG")  
+image = image.resize((300, 300))  
 logo = ImageTk.PhotoImage(image)
 
 logo_label = ctk.CTkLabel(controls_frame, image=logo, text='', height=300, width=300)
 logo_label.grid(row=7, column=0, columnspan=2, padx=20, pady=20, sticky="sew")
 
-# Run the application
+# Runs the GUI
 app.mainloop()
