@@ -114,13 +114,13 @@ def create_and_send_mail():
 
     global style_chosen
     user_input = text_box.get()
-    sender_email = 'intrigavisual@gmail.com'
-    sender_password = 'npfoosbyrzxdhzow'
+    sender_email = 'USERNAME@gmail.com'
+    sender_password = 'PASSWORD'
     
     
-    subject = 'ArtJam Kaleidoscope !'
+    subject = 'Kaleidoscope Generated!'
     receiver_email = email_box.get()
-    body = 'You have sent yourself a Kaleidoscope after interacting with the Kaleidoscope Generator at ArtJam in MACROFEST 2025!\n\n Te has enviado un Caleidoscopio despues de interactuar con el Generador de Caleidoscopio en el ArtJam en MACROFEST 2025'
+    body = 'You have sent yourself a Kaleidoscope after interacting with the Kaleidoscope Generator from [this repo](https://github.com/gabotuzl/kaleidoscope_generator/)!
     try:
         # Sets up the server
         server = smtplib.SMTP('smtp.gmail.com', 587)  # Gmail SMTP server
@@ -199,7 +199,7 @@ frame.grid_columnconfigure(0, weight=1, uniform="equal")
 frame.grid_columnconfigure(1, weight=3, uniform="equal")
 
 # Title label
-title_label = ctk.CTkLabel(frame, text="! GENERA TU CALEIDOSCOPIO !\n@intrigavisual", font=("Arial", 32))
+title_label = ctk.CTkLabel(frame, text="! GENERATE YOUR KALEIDOSCOPE !\n", font=("Arial", 32))
 title_label.grid(row=0, column=0, columnspan=2, pady=10)
 
 # Image placeholder (placed in the right column, bigger image size)
