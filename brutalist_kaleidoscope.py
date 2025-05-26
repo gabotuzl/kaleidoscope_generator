@@ -49,7 +49,7 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
         """Combine Perlin noise with wave interference for a complex texture."""
         params = hash_to_params(hash_str)
         
-        # Create wave interference pattern
+        # Creates wave interference pattern
         animator = np.sin((i) * np.pi/30)
         animator2 = np.cos((i) * np.pi/30)
         x = np.linspace(-2 * np.pi, 2 * np.pi, size)
@@ -62,16 +62,16 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
 
         combined_wave = np.sin(wave1 + wave2) * np.cos(wave3) % 1.0
 
-        # Generate Perlin noise texture
+        # Generates Perlin noise texture
         perlin_texture = generate_perlin_texture(size, hash_str)
 
-        # Combine the wave and Perlin noise
+        # Combines the wave and Perlin noise
         texture = np.multiply(combined_wave, perlin_texture)
 
-        # Convert to grayscale intensity
+        # Converts to grayscale intensity
         img = np.uint8(255 * (texture - texture.min()) / (texture.max() - texture.min()))
 
-        # Create intricate color variations
+        # Creates intricate color variations
         r = (img * (params[10]+params[26]) + animator2**3 * 1.5 + 50) % 255
         g = (img * (params[11]+params[30]*animator) + 3*animator**2 * 0.5 + 50) % 255
         b = (img * (params[12]+params[31]*animator2) + animator * 0.9 + 50) % 255
@@ -88,7 +88,7 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
         params = hash_to_params(hash_str)
         mirrors = int(params[7]*10+2) if (params[7]*10 > 1) else int(params[7]*10+3)
 
-        # Apply 8 reflections (45-degree increments)
+        # Applies reflections
         for i in range(mirrors):
             angle = i * (360/mirrors)
             M = cv2.getRotationMatrix2D((center, center), angle, 1)
@@ -99,57 +99,41 @@ def brutalist_kaleidoscope_generator(input_string, generate_video):
 
 
     def apply_sharpening(image):
-        """Apply a sharpening filter to make the lines sharper."""
+        # Applies a sharpening filter to make the lines sharper
         kernel_sharpen = np.array([[-1, -1, -1], [-1, 9,-1], [-1, -1, -1]])  # Simple sharpening kernel
         sharpened = cv2.filter2D(image, -1, kernel_sharpen)
         kernel_edges = np.array([[ 0,  1,  0], [ 1, -4,  1], [ 0,  1,  0]])
         final_image = cv2.filter2D(sharpened, -1, kernel_edges)
         return final_image
 
-    def apply_saturation_boost(image, factor=1.5):
-        """Increase the saturation to make colors more vibrant."""
-        # Convert the image to HSV color space
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        
-        # Scale the saturation channel
-        hsv[..., 1] = hsv[..., 1] * factor
-        
-        # Clip to ensure saturation doesn't go over 255
-        hsv[..., 1] = np.clip(hsv[..., 1], 0, 255)
-        
-        # Convert back to BGR color space
-        vibrant_image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-        return vibrant_image
-
     def apply_circular_mask(image):
         """Applies a circular mask to keep only the center of the image."""
         height, width = image.shape[:2]
         mask = np.zeros((height, width), dtype=np.uint8)
 
-        # Create a white filled circle in the center
+        # Creates a white filled circle in the center
         center = (width // 2, height // 2)
         radius = min(width, height) // 2  # Use half of the smallest dimension
         cv2.circle(mask, center, radius, 255, -1)  # -1 fills the circle
 
-        # Apply the mask: keep only the circle
+        # Applies the mask: keep only the circle
         masked_image = cv2.bitwise_and(image, image, mask=mask)
 
         return masked_image
 
     def generate_kaleidoscope_image(text, i, generate_video, size=720):
-        """Generate the final kaleidoscope image based on text input."""
+        # Generates the final kaleidoscope image based on text input
         hash_str = hashlib.sha256(text.encode()).hexdigest()
         base_pattern = generate_intricate_texture_with_perlin(size, hash_str, i)
         kaleidoscope_image = apply_kaleidoscope_effect(base_pattern, hash_str)
 
-        # Sharpen the image and boost color saturation
+        # Sharpens the image and boost color saturation
         sharpened_image = apply_sharpening(kaleidoscope_image)
-        # vibrant_image = apply_saturation_boost(sharpened_image)
 
         # Circular cutout
         final_image = apply_circular_mask(sharpened_image)
 
-        # Convert to PIL Image and Save
+        # Converts to PIL Image and Save
         img = Image.fromarray(final_image)
 
         if generate_video is False:
