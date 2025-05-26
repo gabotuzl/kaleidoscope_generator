@@ -46,8 +46,8 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
         
         return texture
 
-    def generate_intricate_texture_with_perlin(size, hash_str, i):
-        # Combines Perlin noise with wave interference for a complex texture
+    def generate_intricate_texture(size, hash_str, i):
+        # Combines wave interference for a complex pattern
         params = hash_to_params(hash_str)
         
         # Creates wave interference pattern
@@ -97,7 +97,7 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
 
 
     def apply_sharpening(image):
-        """Apply a sharpening filter to make the lines sharper."""
+        # Applies a sharpening filter to make the lines sharper
         kernel_sharpen = np.array([[-1, -1, -1], [-1, 9,-1], [-1, -1, -1]])  # Simple sharpening kernel
         sharpened = cv2.filter2D(image, -1, kernel_sharpen)
         kernel_edges = np.array([[ 0,  1,  0], [ 1, -4,  1], [ 0,  1,  0]])
@@ -105,7 +105,7 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
         return final_image
 
     def apply_saturation_boost(image, factor=1.5):
-        """Increase the saturation to make colors more vibrant."""
+        # Increases the saturation to make colors more vibrant
         # Convert the image to HSV color space
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         
@@ -137,7 +137,7 @@ def mystical_kaleidoscope_generator(input_string, generate_video):
     def generate_kaleidoscope_image(text, i, generate_video, size=720):
         # Generates the final kaleidoscope image based on text input
         hash_str = hashlib.sha256(text.encode()).hexdigest()
-        base_pattern = generate_intricate_texture_with_perlin(size, hash_str, i)
+        base_pattern = generate_intricate_texture(size, hash_str, i)
         kaleidoscope_image = apply_kaleidoscope_effect(base_pattern, hash_str)
 
         # Sharpens the image and boost color saturation
