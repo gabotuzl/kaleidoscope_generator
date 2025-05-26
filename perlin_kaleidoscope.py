@@ -26,9 +26,9 @@ def perlin_kaleidoscope_generator(input_string, generate_video):
             return clip
 
     def hash_to_colors(hash_str, j):
-        """Convert SHA-256 hash to RGB color tuples."""
+        # Converts SHA-256 hash to RGB color tuples
         colors = []
-        for i in range(0, len(hash_str) - 5, 6):  # Ensure full 6-char slices
+        for i in range(0, len(hash_str) - 5, 6):  # Ensures full 6-char slices
             r = min(255, max(0, int(hash_str[i:i+2], 16) + 10 * j))
             g = min(255, max(0, int(hash_str[i+2:i+4], 16) + 10 * j))
             b = min(255, max(0, int(hash_str[i+4:i+6], 16) + 10 * j))
@@ -36,12 +36,12 @@ def perlin_kaleidoscope_generator(input_string, generate_video):
         return colors
 
     def hash_to_params(hash_str):
-        """Extract numerical values from the hash to control the pattern."""
+        # Extracts numerical values from the hash to control the pattern 
         params = [int(hash_str[i:i+2], 16) / 255.0 for i in range(0, len(hash_str) - 1, 2)]
         return params
 
     def generate_perlin_texture(size, hash_str, i):
-        """Create a Perlin noise texture influenced by the hash and animated over time."""
+        # Creates a Perlin noise texture influenced by the hash and animated over time 
         z_offset = np.sin(np.pi * i / 30)
         
         scale = int(hash_str[:2], 16) / 5 + 5  # Scale of noise
@@ -62,7 +62,7 @@ def perlin_kaleidoscope_generator(input_string, generate_video):
         return texture
 
     def apply_kaleidoscope_effect(image, hash_str):
-        """Create kaleidoscope effect."""
+        # Creates kaleidoscope effect 
         size = image.shape[0]
         center = size // 2
         kaleidoscope = np.zeros_like(image)
@@ -70,7 +70,7 @@ def perlin_kaleidoscope_generator(input_string, generate_video):
         params = hash_to_params(hash_str)
         mirrors = int(params[7]*10+1)
 
-        # Apply 8 reflections (45-degree increments)
+        # Applies reflections  
         for i in range(mirrors):
             angle = i * (360/mirrors)
             M = cv2.getRotationMatrix2D((center, center), angle, 1)
@@ -80,51 +80,35 @@ def perlin_kaleidoscope_generator(input_string, generate_video):
         return kaleidoscope
 
     def apply_circular_mask(image):
-        """Applies a circular mask to keep only the center of the image."""
+        # Applies a circular mask to keep only the center of the image 
         height, width = image.shape[:2]
         mask = np.zeros((height, width), dtype=np.uint8)
 
-        # Create a white filled circle in the center
+        # Creates a white filled circle in the center
         center = (width // 2, height // 2)
         radius = min(width, height) // 2  # Use half of the smallest dimension
         cv2.circle(mask, center, radius, 255, -1)  # -1 fills the circle
 
-        # Apply the mask: keep only the circle
+        # Applies the mask: keep only the circle
         masked_image = cv2.bitwise_and(image, image, mask=mask)
 
         return masked_image
 
     def apply_sharpening(image):
-        """Apply a sharpening filter to make the lines sharper."""
+        # Applies a sharpening filter to make the lines sharper 
         kernel_sharpen = np.array([[-1, -1, -1], [-1, 9,-1], [-1, -1, -1]])  # Simple sharpening kernel
         sharpened = cv2.filter2D(image, -1, kernel_sharpen)
         kernel_edges = np.array([[ 0,  1,  0], [ 1, -4,  1], [ 0,  1,  0]])
         final_image = cv2.filter2D(sharpened, -1, kernel_edges)
         return final_image
 
-    def apply_saturation_boost(image, factor=1.5):
-        """Increase the saturation to make colors more vibrant."""
-        # Convert the image to HSV color space
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        
-        # Scale the saturation channel
-        hsv[..., 1] = hsv[..., 1] * factor
-        
-        # Clip to ensure saturation doesn't go over 255
-        hsv[..., 1] = np.clip(hsv[..., 1], 0, 255)
-        
-        # Convert back to BGR color space
-        vibrant_image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-        return vibrant_image
-
     def generate_kaleidoscope_image(text, i, generate_video, size=720):
-        """Generate the final kaleidoscope image based on text input."""
+        # Generate the final kaleidoscope image based on text input
         hash_str = hashlib.sha256(text.encode()).hexdigest()
         base_pattern = generate_perlin_texture(size, hash_str, i)
         kaleidoscope_image = apply_kaleidoscope_effect(base_pattern, hash_str)
 
         # Convert to PIL Image and Save
-        # sat_boost = apply_saturation_boost(kaleidoscope_image)
         sharpened_image = apply_sharpening(kaleidoscope_image)
         final_image = apply_circular_mask(sharpened_image)
         img = Image.fromarray(final_image)
